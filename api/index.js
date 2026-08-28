@@ -16,13 +16,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // shop.garena.sg Endpoint
-    const response = await fetch('https://shop.garena.sg/api/auth/player_id_login', {
+    // TopUp BD / Regional Player Info Endpoint
+    const response = await fetch(`https://shop2game.com/api/auth/player_id_login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://shop.garena.sg/'
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': 'https://shop2game.com/'
       },
       body: JSON.stringify({
         app_id: 100067,
@@ -33,12 +34,21 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    // DataDome Captcha ধরা পড়লে
+    if (data.url && data.url.includes('captcha')) {
+      return res.status(429).json({
+        status: false,
+        message: "Garena-এর Captcha সিকিউরিটি ধরা পড়েছে।",
+        solution: "Proxy/Cookies ব্যবহার করতে হবে অথবা প্রস্তুতকৃত API Provider Gateway ব্যবহার করতে হবে।"
+      });
+    }
+
     if (data && data.nickname) {
       return res.status(200).json({
         status: true,
         uid: uid,
         nickname: data.nickname,
-        region: data.region || 'SG/BD'
+        region: data.region || 'BD/SG'
       });
     } else {
       return res.status(404).json({
