@@ -11,18 +11,18 @@ export default async function handler(req, res) {
   if (!uid) {
     return res.status(400).json({
       status: false,
-      message: "5930993272"
+      message: "UID প্রয়োজন! উদাহরণ: /api?uid=12345678"
     });
   }
 
   try {
-    const garenaApiUrl = `https://shop.garena.my/api/auth/player_id_login`;
-    
-    const response = await fetch(garenaApiUrl, {
+    // TopUp & Auth Gateway Payload Setup
+    const response = await fetch('https://shop.garena.my/api/auth/player_id_login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://shop.garena.my/'
       },
       body: JSON.stringify({
         app_id: 100067,
@@ -37,12 +37,14 @@ export default async function handler(req, res) {
       return res.status(200).json({
         status: true,
         uid: uid,
-        nickname: data.nickname
+        nickname: data.nickname,
+        region: data.region || 'N/A'
       });
     } else {
       return res.status(404).json({
         status: false,
-        message: "Invalid UID or Player Not Found"
+        message: "Invalid UID or Player Not Found",
+        raw: data
       });
     }
 
