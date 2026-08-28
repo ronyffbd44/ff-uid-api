@@ -16,13 +16,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    // TopUp & Auth Gateway Payload Setup
-    const response = await fetch('https://shop.garena.my/api/auth/player_id_login', {
+    // shop.garena.sg Endpoint
+    const response = await fetch('https://shop.garena.sg/api/auth/player_id_login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://shop.garena.my/'
+        'Referer': 'https://shop.garena.sg/'
       },
       body: JSON.stringify({
         app_id: 100067,
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         status: true,
         uid: uid,
         nickname: data.nickname,
-        region: data.region || 'N/A'
+        region: data.region || 'SG/BD'
       });
     } else {
       return res.status(404).json({
