@@ -15,15 +15,19 @@ export default async function handler(req, res) {
     });
   }
 
+  // Network Tab -> Request Headers -> cookie থেকে পাওয়া সম্পূর্ণ স্ট্রিংটি এখানে বসান
+  const sessionCookie = "
+region=SG; language=en; mspid2=deaf89dd856917bdd5d8061728b1e2a0; _ga=GA1.1.816287696.1779698736; source=pc; datadome=1FUxrGGfsilF3GSg5HmEaMe1cNc9sQJ1WtMqpMo0jWbpLcSfsR9Qcbx~lPcMgx_yK1Nqauji96WS8yXovTMOk~mtvP~X4JtDeYdYsIW_MGhCYpMZguFrGZgNmV9gdBmH; _ga_PMR65LMTYY=GS2.1.s1787907230$o10$g1$t1787907535$j21$l0$h0";
+
   try {
-    // TopUp BD / Regional Player Info Endpoint
-    const response = await fetch(`https://shop2game.com/api/auth/player_id_login`, {
+    const response = await fetch('https://shop.garena.sg/api/auth/player_id_login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Referer': 'https://shop2game.com/'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36',
+        'Referer': 'https://shop.garena.sg/',
+        'Origin': 'https://shop.garena.sg',
+        'Cookie': sessionCookie
       },
       body: JSON.stringify({
         app_id: 100067,
@@ -34,21 +38,12 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // DataDome Captcha ধরা পড়লে
-    if (data.url && data.url.includes('captcha')) {
-      return res.status(429).json({
-        status: false,
-        message: "Garena-এর Captcha সিকিউরিটি ধরা পড়েছে।",
-        solution: "Proxy/Cookies ব্যবহার করতে হবে অথবা প্রস্তুতকৃত API Provider Gateway ব্যবহার করতে হবে।"
-      });
-    }
-
     if (data && data.nickname) {
       return res.status(200).json({
         status: true,
         uid: uid,
         nickname: data.nickname,
-        region: data.region || 'BD/SG'
+        region: data.region || 'SG/BD'
       });
     } else {
       return res.status(404).json({
